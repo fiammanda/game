@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dragon Cave Loader</title>
+	<meta charset="utf-8" />
+	<meta name="author" content="fiammanda" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<link rel="mask-icon" href="/favicon.svg" color="#666666">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<style type="text/css">
+		::selection {
+			color: #fff;
+			background: #666;
+		}
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-weight: normal;
+			font-style: normal;
+			outline: 0;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			min-height: 100vh;
+			font: 16px/1.5 "Roboto", sans-serif;
+			color: #333;
+			cursor: crosshair;
+		}
+		body.solo {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: .25rem;
+			height: 5rem;
+			pointer-events: none;
+			overflow: hidden;
+		}
+		main {
+			margin: 0 auto;
+			padding: 5rem 1rem 10rem;
+			max-width: 40rem;
+		}
+		img {
+			max-width: 100%;
+			max-height: 100%;
+		}
+		h1 {
+			margin: 5rem 0;
+			font-size: 1.25rem;
+		}
+		h1 span {
+			margin: 0 0 0 .5rem;
+			font-size: .875rem;
+			color: #999;
+			transition: opacity .2s ease-in-out;
+		}
+		h1 span:empty {
+			opacity: 0;
+		}
+		div {
+			display: flex;
+		}
+		form {
+			flex: 0 0 5rem;
+			display: flex;
+			flex-direction: column;
+		}
+		textarea {
+			order: 1;
+			flex: 1 1 100%;
+			margin: .5rem 0 1rem;
+			padding: .25rem .5rem;
+			width: 100%;
+			font-family: "Iosevka", monospace;
+			font-size: .8125rem;
+			color: #333;
+			border: 1px solid #ccc;
+			border-radius: .125rem;
+			resize: none;
+			transition: .2s ease-in-out;
+		}
+		textarea.invalid {
+			border-color: #e99;
+		}
+		textarea:placeholder-shown {
+			border-color: #ccc;
+		}
+		textarea:focus {
+			border-color: #999;
+		}
+		textarea.valid:not(:placeholder-shown) + p span[data-icon="play"],
+		textarea.valid:not(:placeholder-shown) + p span[data-icon="stop"] {
+			pointer-events: all;
+		}
+		textarea.valid:not(:placeholder-shown) + p span[data-icon="play"]::before,
+		textarea.valid:not(:placeholder-shown) + p span[data-icon="stop"]::after {
+			opacity: .6;
+		}
+		p {
+			flex: 0 0 1.5rem;
+			display: flex;
+			align-content: stretch;
+			border: 1px solid #ccc;
+			border-radius: .125rem;
+		}
+		p::before {
+			content: "ALL";
+			flex: 1 0 2rem;
+			font: .8125rem/1.78 "Iosevka", monospace;
+			text-align: center;
+		}
+		p span {
+			flex: 0 0 1.25rem;
+			position: relative;
+			border-left: 1px solid #ccc;
+		}
+		span[data-icon] {
+			transition: .2s ease-in-out;
+			cursor: pointer;
+			pointer-events: none;
+		}
+		span[data-icon]:hover {
+			background: #ddd;
+		}
+		span[data-icon]::before, span[data-icon]::after {
+			position: absolute;
+			top: .0625rem;
+			left: .125rem;
+			width: .8125rem;
+			opacity: 0;
+			transition: .2s ease-in-out;
+		}
+		span[data-icon]::before {
+			content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' d='M9.1,5l9.4,5.2c1.3,0.7,1.3,2.8,0,3.6L9.1,19c-1.2,0.7-2.6-0.3-2.6-1.8V6.8C6.5,5.3,7.9,4.3,9.1,5z'/%3E%3C/svg%3E");
+		}
+		span[data-icon]::after {
+			content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 0 24 24'%3E%3Crect width='12.5' height='12.5' x='5.75' y='5.75' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' rx='1'%3E%3C/rect%3E%3C/svg%3E%0A");
+		}
+		ul {
+			display: flex;
+			flex-wrap: wrap;
+			list-style: none;
+		}
+		li {
+			position: relative;
+			margin: 0 0 1rem 1rem;
+		}
+		li a {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 5rem;
+			height: 5rem;
+			background: #fff;
+			border-radius: .125rem;
+			opacity: 0;
+			transition: .2s ease-in-out;
+		}
+		li a:hover {
+			opacity: .75;
+		}
+		li a[href=""] {
+			pointer-events: none;
+		}
+		li span[data-icon] {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			width: 1.25rem;
+			height: 1.5rem;
+			border: 1px solid #ccc;
+			border-left: 0;
+			border-radius: 0 .125rem .125rem 0;
+		}
+		li[data-size] span {
+			pointer-events: all;
+		}
+		li[data-size] span[data-icon="stop"]::before, li[data-size] span[data-icon="play"]::after {
+			opacity: .6;
+		}
+		iframe {
+			display: block;
+			width: 5rem;
+			height: 5rem;
+			border: 1px solid #ccc;
+			border-radius: .125rem;
+		}
+		input {
+			margin: .5rem 0 0;
+			padding: .25rem;
+			width: 3.75rem;
+			height: 1.5rem;
+			font-family: "Iosevka", monospace;
+			font-size: .8125rem;
+			text-align: center;
+			color: #333;
+			border: 1px solid #ccc;
+			border-radius: .125rem 0 0 .125rem;
+			outline: 0;
+			transition: .2s ease-in-out;
+		}
+		input:focus {
+			border-color: #999;
+		}
+		@font-face {
+			font-family: "Roboto";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: local("Roboto"), url("https://fonts.gstatic.com/s/roboto/v29/KFOmCnqEu92Fr1Mu4mxK.woff2") format("woff2");
+			unicode-range: U+0000-00FF;
+		}
+		@font-face {
+			font-family: "Iosevka";
+			font-style: normal;
+			font-weight: 400;
+			font-display: swap;
+			src: local("Sarasa Term CL"), local("Sarasa Term SC"), local("Sarasa Mono CL"), local("Sarasa Mono SC"), local("Iosevka"), url("https://cdn.jsdelivr.net/npm/@fontsource/iosevka@4.5.4/files/iosevka-latin-400-normal.woff2");
+			unicode-range: U+0000-00FF;
+		}
+	</style>
+</head>
+<body>
+
+<main aria-hidden="true">
+	<h1>Dragon Cave Loader <span></span></h1>
+	<div>
+		<form>
+			<textarea placeholder="one&#10;code&#10;each&#10;line" spellcheck="false"></textarea>
+			<p>
+				<span data-icon="play"></span>
+				<span data-icon="stop"></span>
+			</p>
+		</form>
+		<ul></ul>
+	</div>
+</main>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162600333-1"></script>
+<script type="text/javascript">
+window.dataLayer = window.dataLayer || [];
+function gtag() {dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "UA-162600333-1");
+
+if (location.search) {
+
+	document.body.className = "solo";
+	document.body.innerHTML = `<img src="https://dragcave.net/image/${location.search.substring(6)}.gif?${random()}" />`;
+	if (location.search[1] == "l") {
+		document.head.innerHTML += `<meta http-equiv="refresh" content="1">`;
+	}
+
+	function random() {
+		return Math.floor(Math.random() * 1000);
+	}
+
+} else {
+
+	let reg = /(\w{5}\n)*\w{5}/,
+	    url = location.pathname, interval,
+	    html = `
+			<a href="" target="_blank"></a>
+			<iframe src="about:blank" onload="watch(this)"></iframe>
+			<input type="text" pattern="[0-z]{5}" placeholder="code" spellcheck="false" />
+			<span data-icon=""></span>
+	`;
+	let ta = document.querySelector("textarea"),
+	    ul = document.querySelector("ul");
+
+	reg.test(ta.value) && (ta.className = "valid");
+	ul.innerHTML = "<li>" + html + "</li>";
+
+	document.querySelector("[data-icon=\"play\"]").addEventListener("click", () => {
+		let codes = ta.value.split("\n");
+		ul.innerHTML = "<li>" + html + "</li>";
+		codes.forEach((code, i) => {
+			let input = document.querySelector("input:placeholder-shown");
+			input.value = code;
+			start(input);
+		});
+	});
+	document.querySelector("[data-icon=\"stop\"]").addEventListener("click", () => {
+		let spans = document.querySelectorAll("input + span[data-icon=\"play\"]");
+		spans.forEach(span => {
+			span.click();
+		});
+	});
+
+	ta.addEventListener("change", (e) => {
+		ta.value = ta.value.trim();
+		if (reg.test(ta.value)) {
+			ta.className = "valid";
+		} else {
+			ta.className = "invalid";
+		}
+	});
+
+	ul.addEventListener("change", (e) => {
+		let t = e.target;
+		if (t.validity.valid) {
+			start(t);
+			let value = "";
+			let codes = document.querySelectorAll("input");
+			codes.forEach((code, i) => {
+				value += code.value + "\n";
+			});
+			ta.value = value.trim();
+			ta.className = "valid";
+		} else {
+			t.value = "";
+		}
+	});
+
+	ul.addEventListener("click", (e) => {
+		let t = e.target;
+		if (t.tagName == "INPUT") {
+			t.select();
+		} else if (t.tagName == "SPAN") {
+			let frame = t.previousElementSibling.previousElementSibling;
+			if (t.dataset.icon == "play") {
+				t.dataset.icon = "stop";
+				frame.src = frame.src.replace("?load", "?show");
+			} else {
+				t.dataset.icon = "play";
+				frame.src = frame.src.replace("?show", "?load");
+			}
+		}
+	});
+
+	document.addEventListener("touchstart", () => {
+		let style = document.querySelector("head style");
+		style.innerHTML = style.innerHTML
+			.replace("\n\t\tli a:hover {\n\t\t\topacity: .75;\n\t\t}", "")
+			.replace("\n\t\tspan[data-icon]:hover {\n\t\t\tbackground: #ddd;\n\t\t}", "");
+	}, {once : true});
+
+	fetch("https://api.fiammanda.workers.dev/").then(res => res.json()).then(res => {
+		let page = res[url];
+		document.querySelector("h1 span").innerHTML = `${page["view"]} views`;
+		sessionStorage["counter"] = JSON.stringify(res);
+		if (!sessionStorage[url]) {
+			if (!localStorage[url]) {
+				fetch(`https://api.fiammanda.workers.dev/visit/${page["id"]}`).then(res => res.json()).then(res => {
+					sessionStorage[url] = "1";
+					localStorage[url] = "1";
+				}).catch(error => console.error(`[Failed to update UV]${error}`));
+			} else {
+				fetch(`https://api.fiammanda.workers.dev/view/${page["id"]}`).then(res => res.json()).then(res => {
+					sessionStorage[url] = "1";
+				}).catch(error => console.error(`[Failed to update PV]${error}`));
+			}
+		}
+	}).catch(error => console.error(`[Failed to register counter]${error}`));
+
+	function start(e) {
+		let frame = e.previousElementSibling;
+		let value = e.value;
+		if (value) {
+			if (frame.src == "about:blank") {
+				let li = document.createElement("li");
+				li.innerHTML = `
+					<a href="" target="_blank"></a>
+					<iframe src="about:blank" onload="watch(this)"></iframe>
+					<input type="text" pattern="[0-z]{5}" placeholder="code" spellcheck="false" />
+					<span data-icon=""></span>
+				`;
+				e.parentNode.parentNode.append(li);
+			} else {
+				delete e.parentNode.dataset.size;
+			}
+			e.nextElementSibling.dataset.icon = "play";
+			frame.previousElementSibling.href = `https://dragcave.net/view/${value}`;
+			frame.src = `?load=${value}`;
+		} else {
+			if (document.querySelectorAll("li").length > 1) {
+				e.parentNode.remove();
+			} else {
+				e.nextElementSibling.dataset.icon = "stop";
+				frame.previousElementSibling.href = "";
+				frame.src = "about:blank";
+				delete e.parentNode.dataset.size;
+			}
+		}
+	}
+
+	function watch(e) {
+		let img = e.contentWindow.document.body.firstChild;
+		if (img) {
+			let code = e.src.slice(-5);
+			let size = `${img.naturalWidth}×${img.naturalHeight}`;
+			if (!e.parentNode.dataset.size) {
+				e.parentNode.dataset.size = size;
+			} else if (e.parentNode.dataset.size != size) {
+				e.parentNode.dataset.size = size;
+				e.src = `?show=${code}`;
+				e.nextElementSibling.nextElementSibling.dataset.icon = "stop";
+				notification();
+				sound(220, "sing", .5);
+			}
+		}
+	}
+
+	function sound(frequency, wave, duration) {
+		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+		var audioCtx = new AudioContext();
+		var oscillator = audioCtx.createOscillator();
+		var gainNode = audioCtx.createGain();
+		oscillator.connect(gainNode);
+		gainNode.connect(audioCtx.destination);
+		oscillator.type = wave;
+		oscillator.frequency.value = frequency;
+		gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+		gainNode.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.01);
+		oscillator.start(audioCtx.currentTime);
+		gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+		oscillator.stop(audioCtx.currentTime + duration);
+	}
+
+	function notification() {
+		if (Notification.permission !== "granted") {
+			Notification.requestPermission();
+		} else {
+			new Notification("Your dragon has grown up!");
+		}
+	}
+
+}
+
+</script>
+</body>
+</html>
