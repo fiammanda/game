@@ -6,11 +6,10 @@
 	<meta name="author" content="fiammanda" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<link rel="mask-icon" href="/favicon.svg" color="#666666">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<style type="text/css">
 		::selection {
 			color: #fff;
-			background: #666;
+			background: #333;
 		}
 		* {
 			margin: 0;
@@ -20,12 +19,21 @@
 			font-style: normal;
 			outline: 0;
 		}
-		body {
+		html {
+			-moz-osx-font-smoothing: grayscale;
+			-webkit-font-smoothing: antialiased;
+			-webkit-tap-highlight-color: transparent;
 			-webkit-text-size-adjust: 100%;
-			min-height: 100vh;
-			font: 16px/1.5 "Roboto", sans-serif;
-			color: #333;
+			text-size-adjust: 100%;
+			text-rendering: optimizeLegibility;
+			font: 16px/1.5 "JetBrains Mono", sans-serif;
 			cursor: crosshair;
+		}
+		body {
+			min-height: 100vh;
+			font-size: .8125rem;
+			color: #333;
+			overflow: auto scroll;
 		}
 		body.solo {
 			display: flex;
@@ -38,20 +46,23 @@
 		}
 		main {
 			margin: 0 auto;
-			padding: 5rem 1rem 10rem;
-			max-width: 40rem;
+			padding: 10rem 1rem;
+			max-width: 42rem;
 		}
 		img {
 			max-width: 100%;
 			max-height: 100%;
 		}
 		h1 {
-			margin: 5rem 0;
-			font-size: 1.25rem;
+			margin: 0 0 5rem;
+			font-size: 1.5rem;
+			font-weight: 300;
+			user-select: none;
 		}
 		h1 span {
-			margin: 0 0 0 .5rem;
+			margin: 0 0 0 1rem;
 			font-size: .875rem;
+			font-weight: 400;
 			color: #999;
 			transition: opacity .2s ease-in-out;
 		}
@@ -72,22 +83,20 @@
 			margin: .5rem 0 1rem;
 			padding: .25rem .5rem;
 			width: 100%;
-			font-family: "Iosevka", monospace;
-			font-size: .8125rem;
-			color: #333;
-			border: 1px solid #ccc;
-			border-radius: .125rem;
+			line-height: 1.25 !important;
+			border: 1px solid #666;
 			resize: none;
 			transition: .2s ease-in-out;
 		}
-		textarea.invalid {
-			border-color: #e99;
+		textarea, input {
+			font: .8125rem/1.5 "JetBrains Mono", sans-serif;
+			color: #333;
 		}
-		textarea:placeholder-shown {
-			border-color: #ccc;
+		textarea.invalid {
+			border-color: #e66;
 		}
 		textarea:focus {
-			border-color: #999;
+			background: #eee;
 		}
 		textarea.valid:not(:placeholder-shown) + p span[data-icon="play"],
 		textarea.valid:not(:placeholder-shown) + p span[data-icon="stop"] {
@@ -95,25 +104,24 @@
 		}
 		textarea.valid:not(:placeholder-shown) + p span[data-icon="play"]::before,
 		textarea.valid:not(:placeholder-shown) + p span[data-icon="stop"]::after {
-			opacity: .6;
+			opacity: .75;
 		}
 		p {
 			flex: 0 0 1.5rem;
 			display: flex;
 			align-content: stretch;
-			border: 1px solid #ccc;
-			border-radius: .125rem;
+			border: 1px solid #666;
 		}
 		p::before {
 			content: "ALL";
 			flex: 1 0 2rem;
-			font: .8125rem/1.78 "Iosevka", monospace;
+			line-height: 1.725;
 			text-align: center;
 		}
 		p span {
 			flex: 0 0 1.25rem;
 			position: relative;
-			border-left: 1px solid #ccc;
+			border-left: 1px solid #666;
 		}
 		span[data-icon] {
 			transition: .2s ease-in-out;
@@ -125,17 +133,17 @@
 		}
 		span[data-icon]::before, span[data-icon]::after {
 			position: absolute;
-			top: .0625rem;
+			top: .25rem;
 			left: .125rem;
-			width: .8125rem;
+			width: .875rem;
 			opacity: 0;
 			transition: .2s ease-in-out;
 		}
 		span[data-icon]::before {
-			content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' d='M9.1,5l9.4,5.2c1.3,0.7,1.3,2.8,0,3.6L9.1,19c-1.2,0.7-2.6-0.3-2.6-1.8V6.8C6.5,5.3,7.9,4.3,9.1,5z'/%3E%3C/svg%3E");
+			content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath stroke='currentColor' stroke-width='0' d='M9.1,5l9.4,5.2c1.3,0.7,1.3,2.8,0,3.6L9.1,19c-1.2,0.7-2.6-0.3-2.6-1.8V6.8C6.5,5.3,7.9,4.3,9.1,5z'/%3E%3C/svg%3E");
 		}
 		span[data-icon]::after {
-			content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 0 24 24'%3E%3Crect width='12.5' height='12.5' x='5.75' y='5.75' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' rx='1'%3E%3C/rect%3E%3C/svg%3E%0A");
+			content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-1 0 24 24'%3E%3Crect width='12.5' height='12.5' x='5.75' y='5.75' stroke='currentColor' stroke-width='0' rx='1.5'%3E%3C/rect%3E%3C/svg%3E%0A");
 		}
 		ul {
 			display: flex;
@@ -148,12 +156,11 @@
 		}
 		li a {
 			position: absolute;
-			top: 0;
-			left: 0;
-			width: 5rem;
-			height: 5rem;
+			top: 1px;
+			left: 1px;
+			right: 1px;
+			height: calc(5rem - 2px);
 			background: #fff;
-			border-radius: .125rem;
 			opacity: 0;
 			transition: .2s ease-in-out;
 		}
@@ -169,65 +176,59 @@
 			right: 0;
 			width: 1.25rem;
 			height: 1.5rem;
-			border: 1px solid #ccc;
+			border: 1px solid #666;
 			border-left: 0;
-			border-radius: 0 .125rem .125rem 0;
 		}
 		li[data-size] span {
 			pointer-events: all;
 		}
 		li[data-size] span[data-icon="stop"]::before, li[data-size] span[data-icon="play"]::after {
-			opacity: .6;
+			opacity: .75;
 		}
 		iframe {
 			display: block;
 			width: 5rem;
 			height: 5rem;
-			border: 1px solid #ccc;
-			border-radius: .125rem;
+			border: 1px solid #666;
 		}
 		input {
 			margin: .5rem 0 0;
 			padding: .25rem;
 			width: 3.75rem;
 			height: 1.5rem;
-			font-family: "Iosevka", monospace;
-			font-size: .8125rem;
 			text-align: center;
-			color: #333;
-			border: 1px solid #ccc;
-			border-radius: .125rem 0 0 .125rem;
+			border: 1px solid #666;
 			outline: 0;
 			transition: .2s ease-in-out;
 		}
 		input:focus {
-			border-color: #999;
+			background: #eee;
 		}
 		@font-face {
-			font-family: "Roboto";
+			font-family: "JetBrains Mono";
 			font-style: normal;
 			font-weight: 400;
 			font-display: swap;
-			src: local("Roboto"), url("https://fonts.gstatic.com/s/roboto/v29/KFOmCnqEu92Fr1Mu4mxK.woff2") format("woff2");
-			unicode-range: U+0000-00FF;
+			src: url("https://fonts.gstatic.com/s/jetbrainsmono/v11/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxTOlOV.woff2") format("woff2");
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 		}
 		@font-face {
-			font-family: "Iosevka";
+			font-family: "JetBrains Mono";
 			font-style: normal;
-			font-weight: 400;
+			font-weight: 300;
 			font-display: swap;
-			src: local("Sarasa Term CL"), local("Sarasa Term SC"), local("Sarasa Mono CL"), local("Sarasa Mono SC"), local("Iosevka"), url("https://cdn.jsdelivr.net/npm/@fontsource/iosevka@4.5.4/files/iosevka-latin-400-normal.woff2");
-			unicode-range: U+0000-00FF;
+			src: url("https://fonts.gstatic.com/s/jetbrainsmono/v11/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8lqxTOlOV.woff2") format("woff2");
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 		}
 	</style>
 </head>
 <body>
 
-<main aria-hidden="true">
+<main>
 	<h1>Dragon Cave Loader <span></span></h1>
 	<div>
 		<form>
-			<textarea placeholder="one&#10;code&#10;each&#10;line" spellcheck="false"></textarea>
+			<textarea placeholder="one &#10;code &#10;each &#10;line" spellcheck="false"></textarea>
 			<p>
 				<span data-icon="play"></span>
 				<span data-icon="stop"></span>
@@ -258,7 +259,7 @@ if (location.search) {
 
 } else {
 
-	let reg = /(\w{5}\n)*\w{5}/,
+	let reg = /^(\w{5}\n)*\w{5}$/,
 	    url = location.pathname, interval,
 	    html = `
 			<a href="" target="_blank"></a>
@@ -290,7 +291,7 @@ if (location.search) {
 
 	ta.addEventListener("change", (e) => {
 		ta.value = ta.value.trim();
-		if (reg.test(ta.value)) {
+		if (!ta.value || reg.test(ta.value)) {
 			ta.className = "valid";
 		} else {
 			ta.className = "invalid";
